@@ -10,9 +10,9 @@ def pregunta_01():
     df = pd.read_csv('files/input/solicitudes_de_credito.csv', sep=';')
     # Eliminar filas donde TODAS las columnas son exactamente iguales
     df = df.drop_duplicates(keep='first')
-    df['sexo']=df['sexo'].lower()
+    df['sexo']=df['sexo'].str.lower()
     df['sexo'] = df['sexo'].str.strip()
-    df['tipo_de_emprendimiento']=df['tipo_de_emprendimiento'].lower()
+    df['tipo_de_emprendimiento']=df['tipo_de_emprendimiento'].astype(str).str.lower()
     df['tipo_de_emprendimiento'] = df['tipo_de_emprendimiento'].str.strip()
     df = df.dropna(subset=['tipo_de_emprendimiento'])
     df = df.dropna(subset=['barrio'])
@@ -21,7 +21,7 @@ def pregunta_01():
     
     df = df.dropna()
 
-    df['idea_negocio']=df['idea_negocio'].lower()
+    df['idea_negocio']=df['idea_negocio'].astype(str).str.  lower()
     df['idea_negocio'] = df['idea_negocio'].replace('_',' ')
     df['idea_negocio'] = df['idea_negocio'].str.strip()
     df['comuna_ciudadano']=df['comuna_ciudadano'].astype(str).str.strip()
