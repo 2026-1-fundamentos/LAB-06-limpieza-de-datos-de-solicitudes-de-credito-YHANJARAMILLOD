@@ -26,7 +26,7 @@ def pregunta_01():
     df['idea_negocio'] = df['idea_negocio'].str.strip()
     df['comuna_ciudadano']=df['comuna_ciudadano'].astype(str).str.strip()
     df['estrato'] = df['estrato'].astype(str).str.strip()
-    df['monto_del_credito'] = df['monto_del_credito'].astype(int)
+    df['estrato'] = df['estrato'].astype(int)
     df['fecha_de_beneficio'] = pd.to_datetime(df['fecha_de_beneficio'], format='%d/%m/%Y', errors='coerce')
     # 1. Asegurar que sea texto, quitar espacios, el signo $ y las comas de miles
     df['monto_del_credito'] = df['monto_del_credito'].astype(str).str.strip().str.replace('$', '').str.replace(',', '')
