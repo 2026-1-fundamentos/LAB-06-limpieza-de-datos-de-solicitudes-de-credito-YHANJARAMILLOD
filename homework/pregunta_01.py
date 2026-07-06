@@ -2,73 +2,10 @@
 Escriba el codigo que ejecute la accion solicitada en la pregunta.
 """
 
-import pandas as pd
 import os
+import pandas as pd
+
 def pregunta_01():
-    ruta_salida = "files/output/solicitudes_de_credito.csv"
-    os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
-    df = pd.read_csv('files/input/solicitudes_de_credito.csv', sep=';')
-    # Eliminar filas donde TODAS las columnas son exactamente iguales
-
-    df = df.drop_duplicates(keep='first')
-    #df = df.dropna()
-    # Elimina la fila SOLO si 'monto_del_credito' Y 'barrio' están vacíos al mismo tiempo
-    df = df.dropna(subset=['tipo_de_emprendimiento', 'barrio'], how='all')
-    #df = df.dropna(subset=['sexo'])
-    #df = df.dropna(subset=['barrio'])
-    df['sexo']=df['sexo'].str.lower()
-    df['sexo'] = df['sexo'].str.strip()
-
-    df['tipo_de_emprendimiento']=df['tipo_de_emprendimiento'].astype(str).str.lower()
-    df['tipo_de_emprendimiento'] = df['tipo_de_emprendimiento'].str.strip()
-    
-    df['idea_negocio']=df['idea_negocio'].astype(str).str.lower()
-    df['idea_negocio'] = df['idea_negocio'].replace("_", " ", regex=False)
-    df['idea_negocio'] = df['idea_negocio'].replace("-", " ", regex=False)
-    df['idea_negocio'] = df['idea_negocio'].str.strip()
-
-    df['barrio'] = (
-    df['barrio']
-    .astype(str)                                  # 0. Asegurar que todo sea texto (evita errores con nulos)
-    .str.lower()                                  # 1. Todo a minúsculas
-    .str.replace('_', ' ', regex=False)           # 2. Cambia guiones bajos por espacios ("bombona no. 1")
-    .str.replace(r'no\.(\d+)', r'no. \1', regex=True) # 3. Separa "no.1" a "no. 1" (le pone espacio si detecta un número pegado)
-    .str.replace(r'\s+no\.\s*$', '', regex=True)  # 4. Borra el " no." del final si quedó huérfano (ej. "san jose de la cima no. ")
-    .str.replace(r'\s+', ' ', regex=True)         # 5. Convierte cualquier espacio doble o triple en uno solo
-    .str.strip()                                  # 6. Elimina espacios en blanco al principio o al final de la frase
-    )
-
-    df['comuna_ciudadano']=df['comuna_ciudadano'].astype(str).str.strip()
-    df['comuna_ciudadano'] = df['comuna_ciudadano'].astype(float)
-
-    df['estrato'] = df['estrato'].astype(str).str.strip()
-    df['estrato'] = df['estrato'].astype(int)
-
-    df['fecha_de_beneficio'] = pd.to_datetime(df['fecha_de_beneficio'], errors='coerce')
-    df['fecha_de_beneficio'] = df['fecha_de_beneficio'].dt.strftime('%Y/%m/%d')
-    df = df.dropna(subset=['fecha_de_beneficio'])
-    # 1. Asegurar que sea texto, quitar espacios, el signo $ y las comas de miles
-    # Limpiar y convertir la columna a entero
-    df['monto_del_credito'] = (
-        df['monto_del_credito']
-        .astype(str)                             # 1. Asegurarnos de que Pandas lo trate como texto
-        .str.replace(r'[$, ]', '', regex=True)   # 2. Quitar el $, las comas y los espacios de un solo golpe
-        .astype(float)                           # 3. Convertir a decimal primero (vital por el .00)
-        .astype(int)                             # 4. Cortar los decimales y dejarlo como entero puro
-    )
-    
-    df['línea_credito'] = df['línea_credito'].astype(str).str.lower().str.strip()
-
-    df.to_csv(ruta_salida, index=False, sep=';', encoding='utf-8')
-
-
-
-    
-
-
-    
-
-
     """
     Realice la limpieza del archivo "files/input/solicitudes_de_credito.csv".
     El archivo tiene problemas como registros duplicados y datos faltantes.
@@ -78,3 +15,73 @@ def pregunta_01():
     El archivo limpio debe escribirse en "files/output/solicitudes_de_credito.csv"
 
     """
+    input_path = "files/input/solicitudes_de_credito.csv"
+    output_dir = "files/output"
+    output_path = os.path.join(output_dir, "solicitudes_de_credito.csv")
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    df = pd.read_csv(input_path, sep=";", index_col=0)
+
+    df.dropna(inplace=True)
+
+    df["sexo"] = df["sexo"].str.lower().str.strip()
+
+    df["tipo_de_emprendimiento"] = (
+        df["tipo_de_emprendimiento"].str.lower().str.strip()
+    )
+
+    df["idea_negocio"] = (
+        df["idea_negocio"]
+        .str.lower()
+        .str.replace("_", " ")
+        .str.replace("-", " ")
+        .str.strip()
+    )
+
+    df["barrio"] = (
+        df["barrio"].str.lower().str.replace("_", " ").str.replace("-", " ")
+    )
+
+    df["estrato"] = df["estrato"].astype(int)
+
+    df["comuna_ciudadano"] = df["comuna_ciudadano"].astype(float)
+
+    def parse_date(date_str):
+        if "/" in date_str:
+            parts = date_str.split("/")
+            if len(parts[0]) == 4:
+                return f"{parts[2]}/{parts[1]}/{parts[0]}"
+            else:
+                return f"{parts[0].zfill(2)}/{parts[1].zfill(2)}/{parts[2]}"
+        return date_str
+
+    df["fecha_de_beneficio"] = df["fecha_de_beneficio"].apply(parse_date)
+    df["fecha_de_beneficio"] = pd.to_datetime(
+        df["fecha_de_beneficio"], format="%d/%m/%Y"
+    )
+
+    df["monto_del_credito"] = (
+        df["monto_del_credito"]
+        .astype(str)
+        .str.replace("$", "", regex=False)
+        .str.replace(",", "", regex=False)
+        .str.strip()
+    )
+    df["monto_del_credito"] = (
+        df["monto_del_credito"].str.split(".").str[0].astype(float)
+    )
+
+    df["línea_credito"] = (
+        df["línea_credito"]
+        .str.lower()
+        .str.replace("_", " ")
+        .str.replace("-", " ")
+        .str.strip()
+    )
+
+    df.drop_duplicates(inplace=True)
+
+    df.to_csv(output_path, sep=";", index=False)
+
+    return
