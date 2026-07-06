@@ -13,7 +13,7 @@ def pregunta_01():
     df = df.drop_duplicates(keep='first')
     #df = df.dropna()
     
-    df = df.dropna(subset=['sexo'])
+    #df = df.dropna(subset=['sexo'])
     df = df.dropna(subset=['tipo_de_emprendimiento'])
     df['sexo']=df['sexo'].str.lower()
     df['sexo'] = df['sexo'].str.strip()
