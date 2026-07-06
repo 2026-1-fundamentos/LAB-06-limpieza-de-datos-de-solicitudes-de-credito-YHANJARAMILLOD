@@ -11,13 +11,14 @@ def pregunta_01():
     # Eliminar filas donde TODAS las columnas son exactamente iguales
 
     df = df.drop_duplicates(keep='first')
+    df = df.dropna()
     df['sexo']=df['sexo'].str.lower()
     df['sexo'] = df['sexo'].str.strip()
 
     df['tipo_de_emprendimiento']=df['tipo_de_emprendimiento'].astype(str).str.lower()
     df['tipo_de_emprendimiento'] = df['tipo_de_emprendimiento'].str.strip()
 
-    df = df.dropna()
+    
     
     df['idea_negocio']=df['idea_negocio'].astype(str).str.lower()
     df['idea_negocio'] = df['idea_negocio'].replace("_", " ", regex=False)
