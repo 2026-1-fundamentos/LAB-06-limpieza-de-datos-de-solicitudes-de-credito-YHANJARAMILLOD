@@ -14,7 +14,7 @@ def pregunta_01():
     #df = df.dropna()
     
     #df = df.dropna(subset=['sexo'])
-    df = df.dropna(subset=['tipo_de_emprendimiento'])
+    df = df.dropna(subset=['barrio'])
     df['sexo']=df['sexo'].str.lower()
     df['sexo'] = df['sexo'].str.strip()
 
