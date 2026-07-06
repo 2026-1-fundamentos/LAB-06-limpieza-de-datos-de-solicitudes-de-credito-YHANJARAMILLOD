@@ -54,7 +54,6 @@ def pregunta_01():
         .astype(int)                             # 4. Cortar los decimales y dejarlo como entero puro
     )
     
-    df.price = df.price.astype(int)
     df['línea_credito'] = df['línea_credito'].astype(str).str.lower().str.strip()
 
     df.to_csv(ruta_salida, index=False, sep=';', encoding='utf-8')
