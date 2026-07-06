@@ -12,9 +12,10 @@ def pregunta_01():
 
     df = df.drop_duplicates(keep='first')
     #df = df.dropna()
-    
+    # Elimina la fila SOLO si 'monto_del_credito' Y 'barrio' están vacíos al mismo tiempo
+    df = df.dropna(subset=['tipo_de_emprendimiento', 'barrio'], how='all')
     #df = df.dropna(subset=['sexo'])
-    df = df.dropna(subset=['barrio'])
+    #df = df.dropna(subset=['barrio'])
     df['sexo']=df['sexo'].str.lower()
     df['sexo'] = df['sexo'].str.strip()
 
